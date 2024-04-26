@@ -1,5 +1,5 @@
 {
-    "name": "Player Controller",
+    "name": "PlayerControls",
     "maps": [
         {
             "name": "Movement",
@@ -70,6 +70,34 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "Combat",
+            "id": "168fe7f6-67a2-4bc4-943f-f93fe03e508b",
+            "actions": [
+                {
+                    "name": "Attack",
+                    "type": "Button",
+                    "id": "a9e222f3-b038-4c2f-91ba-88fbcce67ddf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fef4d4df-7cd9-4c8b-b492-2cf3a630851b",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
