@@ -5,8 +5,17 @@ using UnityEngine;
 public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] private int startingHealth = 3;
-    private int currentHealth;
 
+    [SerializeField] private GameObject deathVfxPrefab;
+    private int currentHealth;
+    private KnockBackEffect knockBack;
+
+    private FlashEffect flashEffect;
+
+    private void Awake() {
+        knockBack = GetComponent<KnockBackEffect>();
+        flashEffect = GetComponent<FlashEffect>();
+    }
 
     private void Start() {
         currentHealth = startingHealth;
@@ -14,12 +23,18 @@ public class EnemyHealth : MonoBehaviour
 
     public void takeDamage(int damageAmount){
         currentHealth -= damageAmount;
-        Debug.Log(currentHealth);
-        detectDeathEnemy();
+        knockBack.getKnockedBack(PlayerController.Instance.transform,14f);
+        StartCoroutine(flashEffect.flashEffectRoutine());
+        StartCoroutine(checkDeathEnemyRoutine());
     }
 
+    private IEnumerator checkDeathEnemyRoutine(){
+        yield return new WaitForSeconds(flashEffect.getResetFlashTime());
+        detectDeathEnemy();
+    }
     public void detectDeathEnemy(){
         if(currentHealth <= 0){
+            Instantiate(deathVfxPrefab,transform.position,Quaternion.identity);
             Destroy(gameObject);
         }
     }
