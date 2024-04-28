@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using TMPro;
 using UnityEngine;
 
 public class Sword : MonoBehaviour
@@ -7,6 +9,8 @@ public class Sword : MonoBehaviour
     [SerializeField] private GameObject slashAnimPrefab;
     [SerializeField] private Transform slashAnimSpawnPoint;
     [SerializeField] private Transform weaponCollider;
+
+    [SerializeField] private float attackCoolDownTime = .2f;
     private PlayerControls playerControl;
 
     private Animator myAnimator;
@@ -15,6 +19,8 @@ public class Sword : MonoBehaviour
     private ActiveWeapon activeWeapon;
 
     private GameObject slashAnim;
+
+    private bool attackButtonDown,isAttacking = false;
 
     private void Awake() {
         playerController = GetComponentInParent<PlayerController>();
@@ -30,18 +36,32 @@ public class Sword : MonoBehaviour
     }
 
     private void Start() {
-        playerControl.Combat.Attack.started += _ => Attack() ;
+        playerControl.Combat.Attack.started += _ => startAttacking();
+        playerControl.Combat.Attack.canceled += _ => stopAttacking();
     }
 
     private void Update() {
+        Attack();
         mouseFollowWithOffset();
     }
 
+    private void startAttacking(){
+        attackButtonDown = true;
+    }
+
+    private void stopAttacking(){
+        attackButtonDown = false;
+    }
+
     private void Attack(){
-        myAnimator.SetTrigger("Attack");
-        weaponCollider.gameObject.SetActive(true);
-        slashAnim = Instantiate(slashAnimPrefab,slashAnimSpawnPoint.position,Quaternion.identity);
-        slashAnim.transform.parent = this.transform.parent;
+        if(attackButtonDown && !isAttacking){
+            isAttacking = true;
+            myAnimator.SetTrigger("Attack");
+            weaponCollider.gameObject.SetActive(true);
+            slashAnim = Instantiate(slashAnimPrefab,slashAnimSpawnPoint.position,Quaternion.identity);
+            slashAnim.transform.parent = this.transform.parent;
+            StartCoroutine(attackCooldownRoutine());
+        }
     }
 
     private void attackingStoppedAnimEvent(){
@@ -79,6 +99,11 @@ public class Sword : MonoBehaviour
             weaponCollider.rotation = Quaternion.Euler(0, 0,0);
         }
             
+    }
+
+    private IEnumerator attackCooldownRoutine(){
+        yield return new WaitForSeconds(attackCoolDownTime);
+        isAttacking = false;
     }
 
     
